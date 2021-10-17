@@ -27,28 +27,7 @@ resource "azurerm_storage_account" "sa" {
     type = "SystemAssigned"
   }
 
-  dynamic "blob_properties" {
-    for_each = ((var.account_kind == "BlockBlobStorage" || var.account_kind == "StorageV2") ? [1] : [])
-    content {
-      dynamic "delete_retention_policy" {
-        for_each = (var.blob_delete_retention_days == null ? [] : [1])
-        content {
-          days = var.blob_delete_retention_days
-        }
-      }
-      dynamic "cors_rule" {
-        for_each = (var.blob_cors == null ? {} : var.blob_cors)
-        content {
-          allowed_headers    = cors_rule.value.allowed_headers
-          allowed_methods    = cors_rule.value.allowed_methods
-          allowed_origins    = cors_rule.value.allowed_origins
-          exposed_headers    = cors_rule.value.exposed_headers
-          max_age_in_seconds = cors_rule.value.max_age_in_seconds
-        }
-      }
-    }
-  }
-
+  
   dynamic "static_website" {
     for_each = local.static_website_enabled
     content {
